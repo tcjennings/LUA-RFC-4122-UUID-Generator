@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 local M = {}
 -----
 local function num2bs(num)
-	local _mod = math.mod
+	local _mod = math.fmod or math.mod
 	local _floor = math.floor
 	--
 	local index, result = 1 , ""
