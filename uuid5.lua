@@ -95,8 +95,8 @@ local function getUUID(name,nameSpace)
 	--For a v5 UUID, some common namespaces are specified in RFC4122.
 	--This module will support these as well as provide an internal
 	--Namespace UUID for arbitrary strings
-	local namespaceUUID
-	if nameSpace == "nsURL" then
+	local nameSpaceUUID
+	if     nameSpace == "nsURL" then
 		nameSpaceUUID="6ba7b811-9dad-11d1-80b4-00c04fd430c8"
 	elseif nameSpace == "nsDNS" then
 		nameSpaceUUID="6ba7b810-9dad-11d1-80b4-00c04fd430c8"
@@ -115,29 +115,35 @@ local function getUUID(name,nameSpace)
 	local _sub = string.sub
 	local _upper = string.upper
 	--
+	nameSpaceUUID = string.gsub(nameSpaceUUID,"-", "")
+	local encodedNameSpaceUUID = ""
+	for i=1,#nameSpaceUUID,2 do
+		encodedNameSpaceUUID = encodedNameSpaceUUID .. string.char(hex2dec(_sub(nameSpaceUUID,i,i+1)))
+	end
+	--
 	--REFER TO YOUR CRYPTO LIBRARY FOR CREATING A HASH
 	--OF THE CONCATENATED nameSpaceUUID AND name
 	local nameHash = _hash.new("sha1")
-	nameHash:update(nameSpaceUUID)
+	nameHash:update(encodedNameSpaceUUID)
 	nameHash:update(name)
 	nameHash = nameHash:final()
 	--
-	local time_low = _sub(nameHash,33,40)
+	local time_low = _sub(nameHash,1,8)
 	--
-	local time_mid = _sub(nameHash,29,32)
+	local time_mid = _sub(nameHash,9,12)
 	--
-	local time_hi = _sub(nameHash,25,28)
+	local time_hi = _sub(nameHash,13,16)
 	time_hi = padbits( num2bs( hex2dec(time_hi) ),16 )
 	local version = "0101"
 	time_hi_and_version= bs2num( version .. _sub(time_hi,5,16) )
 	--
-	local clock_seq_hi_res = _sub(nameHash,23,24)
+	local clock_seq_hi_res = _sub(nameHash,17,18)
 	clock_seq_hi_res = padbits( num2bs(hex2dec(clock_seq_hi_res)), 8 )
 	clock_seq_hi_res = bs2num( "10" .. _sub(clock_seq_hi_res,3,8) )
 	--
-	local clock_seq_low = _sub(nameHash,21,22)
+	local clock_seq_low = _sub(nameHash,19,20)
 	--
-	local node = _sub(nameHash,9,20)
+	local node = _sub(nameHash,21,32)
 	--
 	local guid=""
 	
