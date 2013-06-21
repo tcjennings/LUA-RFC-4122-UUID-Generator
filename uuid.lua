@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 local M = {}
 -----
 local function num2bs(num)
-	local _mod = math.mod
+	local _mod = math.fmod or math.mod
 	local _floor = math.floor
 	--
 	local index, result = 1 , ""
@@ -59,7 +59,6 @@ end
 --
 local function getUUID()
 	local _rnd = math.random
-	local _sub = string.sub
 	local _fmt = string.format
 	--
 	local time_low = os.time()
@@ -67,14 +66,13 @@ local function getUUID()
 	--
 	local time_mid = _rnd(0, 65535)
 	--
-	local time_hi = _rnd(0, 65535 )
-	time_hi = padbits( num2bs(time_hi), 16 )
-	time_hi = _sub( time_hi, 1, 12 )
-	local time_hi_and_version = bs2num( time_hi .. "0100" )
+	local time_hi = _rnd(0, 4095 )
+	time_hi = padbits( num2bs(time_hi), 12 )
+	local time_hi_and_version = bs2num( "0100" .. time_hi )
 	--
-	local clock_seq_hi_res = _rnd(0,255)
-	clock_seq_hi_res = padbits( num2bs(clock_seq_hi_res), 8 )
-	clock_seq_hi_res = _sub( clock_seq_hi_res, 1, 6) .. "01"
+	local clock_seq_hi_res = _rnd(0,63)
+	clock_seq_hi_res = padbits( num2bs(clock_seq_hi_res), 6 )
+	clock_seq_hi_res = "10" .. clock_seq_hi_res 
 	--
 	local clock_seq_low = _rnd(0,255)
 	clock_seq_low = padbits( num2bs(clock_seq_low), 8 )
