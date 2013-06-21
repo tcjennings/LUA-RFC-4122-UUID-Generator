@@ -61,8 +61,12 @@ local function getUUID()
 	local _rnd = math.random
 	local _fmt = string.format
 	--
-	local time_low = os.time()
-	math.randomseed( time_low )
+	math.randomseed( os.time() )
+	_rnd()
+	--
+	local time_low_a = _rnd(0, 65535)
+	local time_low_b = _rnd(0, 65535)
+	print(time_low_a,time_low_b)
 	--
 	local time_mid = _rnd(0, 65535)
 	--
@@ -80,13 +84,13 @@ local function getUUID()
 	local clock_seq = bs2num(clock_seq_hi_res .. clock_seq_low)
 	--
 	local node = {}
-	node[1]= (128 + _rnd(0,127) )
-	for i=2,6 do
+	for i=1,6 do
 		node[i] = _rnd(0,255)
 	end
 	--
 	local guid = ""
-	guid = guid .. padbits(_fmt("%X",time_low), 8) .. "-"
+	guid = guid .. padbits(_fmt("%X",time_low_a), 4)
+	guid = guid .. padbits(_fmt("%X",time_low_b), 4) .. "-"
 	guid = guid .. padbits(_fmt("%X",time_mid), 4) .. "-"
 	guid = guid .. padbits(_fmt("%X",time_hi_and_version), 4) .. "-"
 	guid = guid .. padbits(_fmt("%X",clock_seq), 4) .. "-"
