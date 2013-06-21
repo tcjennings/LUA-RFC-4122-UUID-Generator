@@ -54,6 +54,7 @@ end
 --
 local function hex2dec(hex)
 	local _sub = string.sub
+	local _pow = math.pow
 	local dec = 0
 	local nibbles=string.len(hex)
 	local valTable = {}
@@ -73,7 +74,7 @@ local function hex2dec(hex)
 		elseif v=="E" then v=14
 		elseif v=="F" then v=15
 		end
-		local newVal=v*math.pow(16,i-1)
+		local newVal=v*_pow(16,i-1)
 		dec=dec+newVal
 	end
 	--
@@ -114,6 +115,8 @@ local function getUUID(name,nameSpace)
 	local _sub = string.sub
 	local _upper = string.upper
 	--
+	--REFER TO YOUR CRYPTO LIBRARY FOR CREATING A HASH
+	--OF THE CONCATENATED nameSpaceUUID AND name
 	local nameHash = _hash.new("sha1")
 	nameHash:update(nameSpaceUUID)
 	nameHash:update(name)
