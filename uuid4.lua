@@ -66,7 +66,6 @@ local function getUUID()
 	--
 	local time_low_a = _rnd(0, 65535)
 	local time_low_b = _rnd(0, 65535)
-	print(time_low_a,time_low_b)
 	--
 	local time_mid = _rnd(0, 65535)
 	--
