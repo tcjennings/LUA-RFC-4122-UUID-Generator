@@ -81,6 +81,16 @@ local function hex2dec(hex)
 	return dec
 end
 --
+local function hex2bytes(hex)
+	local result = ""
+	local _char = string.char
+	local _sub = string.sub
+	for i=1,#hex,2 do
+		result = result .. _char(hex2dec(_sub(hex,i,i+1)))
+	end
+	return result
+end
+--
 local function padbits(num,bits)
 	if #num == bits then return num end
 	if #num > bits then print("too many bits") end
@@ -96,6 +106,7 @@ local function getUUID(name,nameSpace)
 	--This module will support these as well as provide an internal
 	--Namespace UUID for arbitrary strings
 	local nameSpaceUUID
+	--
 	if     nameSpace == "nsURL" then
 		nameSpaceUUID="6ba7b811-9dad-11d1-80b4-00c04fd430c8"
 	elseif nameSpace == "nsDNS" then
@@ -104,27 +115,23 @@ local function getUUID(name,nameSpace)
 		nameSpaceUUID="6ba7b812-9dad-11d1-80b4-00c04fd430c8"
 	elseif nameSpace == "nsX500" then
 		nameSpaceUUID="6ba7b814-9dad-11d1-80b4-00c04fd430c8"
-	else
-		--an arbitrary v4 UUID--
+	else --an arbitrary v4 UUID--
 		nameSpaceUUID="51C3AF2C-0C43-410E-9F1B-CA01FF66333E"
 	end
-	
+	--
+	nameSpaceUUID = string.gsub(nameSpaceUUID,"-", "")
+	nameSpaceUUID = hex2bytes(nameSpaceUUID)
+	--
 	local _hash = crypto.digest
 	local _rnd = math.random
 	local _fmt = string.format
 	local _sub = string.sub
 	local _upper = string.upper
 	--
-	nameSpaceUUID = string.gsub(nameSpaceUUID,"-", "")
-	local encodedNameSpaceUUID = ""
-	for i=1,#nameSpaceUUID,2 do
-		encodedNameSpaceUUID = encodedNameSpaceUUID .. string.char(hex2dec(_sub(nameSpaceUUID,i,i+1)))
-	end
-	--
 	--REFER TO YOUR CRYPTO LIBRARY FOR CREATING A HASH
 	--OF THE CONCATENATED nameSpaceUUID AND name
 	local nameHash = _hash.new("sha1")
-	nameHash:update(encodedNameSpaceUUID)
+	nameHash:update(nameSpaceUUID)
 	nameHash:update(name)
 	nameHash = nameHash:final()
 	--
@@ -146,7 +153,7 @@ local function getUUID(name,nameSpace)
 	local node = _sub(nameHash,21,32)
 	--
 	local guid=""
-	
+	--
 	guid = guid .. padbits(_upper(time_low),8) .. "-"
 	guid = guid .. padbits(_upper(time_mid),4) .. "-"
 	guid = guid .. padbits(_fmt("%X",time_hi_and_version), 4) .. "-"
