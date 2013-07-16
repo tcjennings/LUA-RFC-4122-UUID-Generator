@@ -20,11 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 local M = {}
 -----
+math.randomseed( os.time() )
+math.random()
+-----
 local function num2bs(num)
 	local _mod = math.fmod or math.mod
 	local _floor = math.floor
 	--
-	local index, result = 1 , ""
+	local result = ""
 	if(num == 0) then return "0" end
 	while(num  > 0) do
 		 result = _mod(num,2) .. result
@@ -61,7 +64,6 @@ local function getUUID()
 	local _rnd = math.random
 	local _fmt = string.format
 	--
-	math.randomseed( os.time() )
 	_rnd()
 	--
 	local time_low_a = _rnd(0, 65535)
